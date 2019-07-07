@@ -1,61 +1,87 @@
-import React, { useState } from 'react';
-import  CustomTable from './CustomTable';
+import React, {useEffect, useState} from 'react';
+import CustomTable from './CustomTable';
 
 export  default  function List(props)
 {
 
 
-    const columns = [
-        {
-            title: 'Full Name',
-            width: 100,
-            dataIndex: 'name',
-            key: 'name',
+    const columns = [{
+        title: 'id',
+        dataIndex: 'id',
+        key: 'id',
             fixed: 'left',
         },
         {
-            title: 'Age',
-            width: 100,
-            dataIndex: 'age',
-            key: 'age',
+            title: 'text',
+            dataIndex: 'text',
+            key: 'text',
+
             fixed: 'left',
         },
-        { title: 'Column 1', dataIndex: 'address', key: '1' },
-        { title: 'Column 2', dataIndex: 'address', key: '2' },
-        { title: 'Column 3', dataIndex: 'address', key: '3' },
-        { title: 'Column 4', dataIndex: 'address', key: '4' },
-        { title: 'Column 5', dataIndex: 'address', key: '5' },
-        { title: 'Column 6', dataIndex: 'address', key: '6' },
-        { title: 'Column 7', dataIndex: 'address', key: '7' },
-        { title: 'Column 8', dataIndex: 'address', key: '8' },
         {
-            title: 'Action',
-            key: 'operation',
-            fixed: 'right',
-            width: 100,
-            render: () => <a href="javascript:;">action</a>,
+            title: 'createdAt',
+            dataIndex: 'createdAt',
+            sorter: (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
+            key: 'createdAt',
+            fixed: 'left',
         },
+
+        ,
+        {
+            title: 'updateAt',
+            width: 100,
+            dataIndex: 'updateAt',
+            key: 'updateAt',
+            fixed: 'left',
+        },
+
     ];
 
-    const data = [
-        {
-            key: '1',
-            name: 'John Brown',
-            age: 32,
-            address: 'New York Park',
-        },
-        {
-            key: '2',
-            name: 'Jim Green',
-            age: 40,
-            address: 'London Park',
-        },
-    ];
+
+    const [data, updateData] = useState({dataset: []});
+    //https://www.mkyong.com/spring-boot/spring-boot-webflux-server-sent-events-example/
+    useEffect(() => {
+
+        const eventSource = new EventSource("http://localhost:8080/stream/tweets");
+        eventSource.onmessage = (e) => {
+            const element = JSON.parse(e.data);
+            element.key = element.id;
+            let dataset = data.dataset;
+            const indexOfDataSet = dataset.findIndex(currentData => currentData.id === element.id);
+            if (indexOfDataSet === -1) {
+                dataset.push(element);
+                updateData({dataset: dataset});
+            } else {
+
+                if (dataset[indexOfDataSet].updateAt !== element.updateAt) {
+                    console.log(element)
+                    console.log(dataset[indexOfDataSet].updateAt !== element.updateAt)
+                }
+
+
+                if (dataset[indexOfDataSet]) {
+
+                    if (dataset[indexOfDataSet].updateAt !== element.updateAt) {
+                        dataset[indexOfDataSet] = element;
+                        updateData({dataset: dataset});
+                    }
+
+                }
+
+
+            }
+
+
+        };
+
+
+    });
+
 
 
     return (
         <>
-            <CustomTable data={data} columns={columns} />
+            <CustomTable data={data.dataset} columns={columns}/>
         </>
     );
 }

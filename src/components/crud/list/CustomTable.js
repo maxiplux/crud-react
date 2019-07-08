@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Table } from 'antd';
+import React from 'react';
+import {Table} from 'antd';
 
 
 export  default function CustomTable(props) {
@@ -7,7 +7,9 @@ export  default function CustomTable(props) {
 
     return (
         <>
-            <Table columns={props.columns} dataSource={props.data} scroll={{ x: 1300 }} />
+            <Table
+                pagination={{showSizeChanger: true, defaultPageSize: 100, pageSizeOptions: ['100', '200', '300', '40']}}
+                columns={props.columns} dataSource={props.data} scroll={{x: 1300}}/>
         </>
     );
 }

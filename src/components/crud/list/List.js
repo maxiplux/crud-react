@@ -81,7 +81,7 @@ export  default  function List(props)
 
     return (
         <>
-            <CustomTable data={data.dataset} columns={columns}/>
+            <CustomTable data={data.dataset} size={data.dataset.length} columns={columns}/>
         </>
     );
 }
